@@ -33,9 +33,10 @@ double do_step(double* x, unsigned* eq_constraints, unsigned n_eq_constraints, u
         unsigned i_second = *(eq_constraints++);
         double first = x[i_first];
         double second = x[i_second];
+        unsigned strength = *(eq_constraints++);
 
         double distance = second - first;
-        double delta = distance * delta_t;
+        double delta = distance * delta_t * strength;
         delta_x[i_first] += delta;
         delta_x[i_second] -= delta;
 
@@ -47,9 +48,10 @@ double do_step(double* x, unsigned* eq_constraints, unsigned n_eq_constraints, u
         unsigned i_second = *(lt_constraints++);
         double first = x[i_first];
         double second = x[i_second];
+        unsigned strength = *(lt_constraints++);
 
         double distance = min(0., second - first - 1);
-        double delta = distance * delta_t;
+        double delta = distance * delta_t * strength;
         delta_x[i_first] += delta;
         delta_x[i_second] -= delta;
 

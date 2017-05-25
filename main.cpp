@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <stdexcept>
 #include <algorithm>
@@ -21,49 +22,54 @@ double* x;
 unsigned* eq_constraints;
 unsigned* lt_constraints;
 
-void getline_noerror(istream& in, string& line) {
+void getline_noerror(istream& in, string& line, unsigned& lc) {
+    lc++;
+
     if (!getline(in, line)) {
-        throw runtime_error("Input file is missing lines");
+        stringstream ss;
+        ss << "Input file is missing lines. First missing line: " << lc;
+        throw runtime_error(ss.str());
     }
 }
 
 void read_params(istream& in) {
     string line;
+    unsigned lc = 0;
 
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     nx = stoul(line);
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     n_eq_constraints = stoul(line);
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     n_lt_constraints = stoul(line);
 
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     surrounding_k = stod(line);
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     max_rounds = stoul(line);
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     max_delta = stod(line);
 
     x = (double*) aligned_alloc(32, sizeof(double) * nx);
-    eq_constraints = (unsigned*) aligned_alloc(32, sizeof(unsigned) * n_eq_constraints * 2);
-    lt_constraints = (unsigned*) aligned_alloc(32, sizeof(unsigned) * n_lt_constraints * 2);
+    eq_constraints = (unsigned*) aligned_alloc(32, sizeof(unsigned) * n_eq_constraints * 3);
+    lt_constraints = (unsigned*) aligned_alloc(32, sizeof(unsigned) * n_lt_constraints * 3);
 
     for (unsigned i = 0; i < nx; i++) {
-        getline_noerror(in, line);
+        getline_noerror(in, line, lc);
         x[i] = stod(line);
     }
 
-    for (unsigned i = 0; i < n_eq_constraints * 2; i++) {
-        getline_noerror(in, line);
+    for (unsigned i = 0; i < n_eq_constraints * 3; i++) {
+        getline_noerror(in, line, lc);
         eq_constraints[i] = stoul(line);
     }
 
-    for (unsigned i = 0; i < n_lt_constraints * 2; i++) {
-        getline_noerror(in, line);
+    for (unsigned i = 0; i < n_lt_constraints * 3; i++) {
+        getline_noerror(in, line, lc);
         lt_constraints[i] = stoul(line);
     }
 
-    getline_noerror(in, line);
+    getline_noerror(in, line, lc);
     if (line.length() > 0) {
         throw runtime_error("Extra lines in input file!");
 
